@@ -30,6 +30,9 @@ from mpl_toolkits.mplot3d import Axes3D, proj3d
 import pandas as pd
 import numpy as np
 
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
+
 try:
     import tkinter as tk
     # noinspection PyCompatibility
@@ -45,6 +48,8 @@ if PY3:
 else:
     string_types = basestring,
 
+debug = False
+    
 REQUIRED_DATA = frozenset(['DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE', 'P', 'RINFO', 'p'])
 
 def getFunctionArguments(func):
