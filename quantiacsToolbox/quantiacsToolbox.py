@@ -48,7 +48,8 @@ if PY3:
 else:
     string_types = basestring,
 
-log_url = True
+quantiacsLogLevels = dict()
+quantiacsLogLevels['url'] = False
     
 REQUIRED_DATA = frozenset(['DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE', 'P', 'RINFO', 'p'])
 
@@ -100,7 +101,7 @@ def loadData(marketList=None, dataToLoad=None, refresh=False, beginInSample=None
         # check to see if market data is present. If not (or refresh is true), download data from quantiacs.
         if refresh or not os.path.isfile(path):
             url = "https://www.quantiacs.com/data/" + market + ".txt"
-            if log_url:
+            if quantiacsLogLevels['url']:
                 print("Url: {}".format(url))
             resp = requests.get(url, timeout=30)
             if resp.status_code == requests.codes.ok:
@@ -148,7 +149,7 @@ def loadData(marketList=None, dataToLoad=None, refresh=False, beginInSample=None
         # check to see if data is present. If not (or refresh is true), download data from quantiacs.
         if refresh or not os.path.isfile(filePath):
             url = "https://www.quantiacs.com/data/" + additionData + ".txt"
-            if log_url:
+            if quantiacsLogLevels['url']:
                 print("Url: {}".format(url))
             resp = requests.get(url, timeout=30)
             if resp.status_code == requests.codes.ok:
@@ -658,7 +659,7 @@ def plotOptimizationResult(resultFileName):
     ui.mainloop()
 
 
-def runts(tradingSystem=None, plotEquity=True, reloadData=False, state={}, sourceData='tickerData'):
+def runts(tradingSystem=None, plotEquity=True, reloadData=False, state={}, sourceData='tickerData', logLevels=None):
     ''' backtests a trading system.
 
     evaluates the trading system function specified in the argument tsName and returns the struct ret. runts calls the trading system for each period with sufficient market data, and collets the returns of each call to compose a backtest.
@@ -693,7 +694,11 @@ def runts(tradingSystem=None, plotEquity=True, reloadData=False, state={}, sourc
 
     Copyright Quantiacs LLC - March 2015
     '''
+    global quantiacsLogLevels
 
+    if logLevels:
+        quantiacsLogLevels = logLevels
+    
     errorlog = []
     ret = {}
 

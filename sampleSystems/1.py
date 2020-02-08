@@ -174,6 +174,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    quantiacsToolbox.log_url = args.log_url
+    quantiacsLogLevels = dict()
+    quantiacsLogLevels['url'] = args.log_url
     
-    results = quantiacsToolbox.runts(__file__)
+    results = quantiacsToolbox.runts(__file__, logLevels=quantiacsLogLevels)

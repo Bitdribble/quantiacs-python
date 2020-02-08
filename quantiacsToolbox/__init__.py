@@ -1,3 +1,3 @@
 name = 'quantiacsToolbox'
 
-from .quantiacsToolbox import runts, optimize, loadData, plotts, stats, submit, computeFees, updateCheck, log_url
+from .quantiacsToolbox import runts, optimize, loadData, plotts, stats, submit, computeFees, updateCheck
