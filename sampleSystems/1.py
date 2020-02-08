@@ -2,6 +2,8 @@ import numpy as np
 import datetime
 import argparse
 
+log_url = False
+
 def myTradingSystem(DATE, OPEN, HIGH, LOW, CLOSE, VOL, exposure, equity, settings):
 
     #
@@ -119,6 +121,7 @@ def mySettings():
     The function name "mySettings" should not be changed.
 
     Default settings are shown below.'''
+    global foo
 
     # Default competition and evaluation mySettings
     settings = {}
@@ -160,6 +163,9 @@ def mySettings():
     settings['days_passed'] = 0
     settings['spy_under_short_sma'] = 0
     settings['spy_over_short_sma'] = 0
+
+    if log_url:
+        settings['logUrl'] = True
     
     return settings
 
@@ -169,12 +175,9 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Run strategy backtrace.')
 
-    parser.add_argument('-d', '--debug', help='Enable ')
     parser.add_argument('--log-url', action='store_true', help='Log url for data download')
 
     args = parser.parse_args()
+    log_url = args.log_url
 
-    quantiacsLogLevels = dict()
-    quantiacsLogLevels['url'] = args.log_url
-    
-    results = quantiacsToolbox.runts(__file__, logLevels=quantiacsLogLevels)
+    results = quantiacsToolbox.runts(__file__)

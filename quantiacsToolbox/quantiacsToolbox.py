@@ -63,7 +63,8 @@ def getFunctionArguments(func):
         return inspect.getargspec(func)[0]
 
 def loadData(marketList=None, dataToLoad=None, refresh=False, beginInSample=None, endInSample=None,
-             dataDir="tickerData"):
+             dataDir="tickerData",
+             settings=None):
     """ prepares and returns market data for specified markets.
 
         prepares and returns related to the entries in the dataToLoad list. When refresh is true, data is updated from the Quantiacs server. If inSample is left as none, all available data dates will be returned.
@@ -101,7 +102,7 @@ def loadData(marketList=None, dataToLoad=None, refresh=False, beginInSample=None
         # check to see if market data is present. If not (or refresh is true), download data from quantiacs.
         if refresh or not os.path.isfile(path):
             url = "https://www.quantiacs.com/data/" + market + ".txt"
-            if quantiacsLogLevels['url']:
+            if 'logUrl' in settings:
                 print("Url: {}".format(url))
             resp = requests.get(url, timeout=30)
             if resp.status_code == requests.codes.ok:
@@ -149,7 +150,7 @@ def loadData(marketList=None, dataToLoad=None, refresh=False, beginInSample=None
         # check to see if data is present. If not (or refresh is true), download data from quantiacs.
         if refresh or not os.path.isfile(filePath):
             url = "https://www.quantiacs.com/data/" + additionData + ".txt"
-            if quantiacsLogLevels['url']:
+            if 'logUrl' in settings:
                 print("Url: {}".format(url))
             resp = requests.get(url, timeout=30)
             if resp.status_code == requests.codes.ok:
@@ -310,8 +311,10 @@ def optimize(tradingSystemFileName=None, reloadData=False, sourceData="tickerDat
     ts = SrcCodeTradingSystem(srcCode)
     settings = ts.mySettings()
     dataToLoad = set([i for i in getFunctionArguments(ts.myTradingSystem) if i.isupper()]) | REQUIRED_DATA
-    loadData(settings['markets'], dataToLoad, reloadData, settings.get("beginInSample"), settings.get("endInSample"),
-             sourceData)
+    loadData(settings['markets'], dataToLoad, reloadData,
+             settings.get("beginInSample"), settings.get("endInSample"),
+             sourceData,
+             settings)
 
     _, tradingSystemName = os.path.split(tradingSystemFileName)
 
@@ -659,7 +662,7 @@ def plotOptimizationResult(resultFileName):
     ui.mainloop()
 
 
-def runts(tradingSystem=None, plotEquity=True, reloadData=False, state={}, sourceData='tickerData', logLevels=None):
+def runts(tradingSystem=None, plotEquity=True, reloadData=False, state={}, sourceData='tickerData'):
     ''' backtests a trading system.
 
     evaluates the trading system function specified in the argument tsName and returns the struct ret. runts calls the trading system for each period with sufficient market data, and collets the returns of each call to compose a backtest.
@@ -694,11 +697,6 @@ def runts(tradingSystem=None, plotEquity=True, reloadData=False, state={}, sourc
 
     Copyright Quantiacs LLC - March 2015
     '''
-    global quantiacsLogLevels
-
-    if logLevels:
-        quantiacsLogLevels = logLevels
-    
     errorlog = []
     ret = {}
 
@@ -768,8 +766,11 @@ def runts(tradingSystem=None, plotEquity=True, reloadData=False, state={}, sourc
     global dataCache
 
     if 'settingsCache' not in globals() or settingsCache != settings:
-        dataDict = loadData(settings['markets'], dataToLoad, reloadData, settings.get("beginInSample"),
-                            settings.get("endInSample"), sourceData)
+        dataDict = loadData(settings['markets'], dataToLoad, reloadData,
+                            settings.get("beginInSample"),
+                            settings.get("endInSample"),
+                            sourceData,
+                            settings)
         dataCache = deepcopy(dataDict)
         settingsCache = deepcopy(settings)
     else:
