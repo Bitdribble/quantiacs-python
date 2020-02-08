@@ -1,5 +1,6 @@
 import numpy as np
 import datetime
+import argparse
 
 def myTradingSystem(DATE, OPEN, HIGH, LOW, CLOSE, VOL, exposure, equity, settings):
 
@@ -165,4 +166,8 @@ def mySettings():
 # Evaluate trading system defined in current file.
 if __name__ == '__main__':
     import quantiacsToolbox
+
+    parser = argparse.ArgumentParser(description='Run strategy backtrace.')
+    args = parser.parse_args()
+    
     results = quantiacsToolbox.runts(__file__)
