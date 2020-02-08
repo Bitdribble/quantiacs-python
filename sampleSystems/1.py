@@ -168,6 +168,12 @@ if __name__ == '__main__':
     import quantiacsToolbox
 
     parser = argparse.ArgumentParser(description='Run strategy backtrace.')
+
+    parser.add_argument('-d', '--debug', help='Enable ')
+    parser.add_argument('--log-url', action='store_true', help='Log url for data download')
+
     args = parser.parse_args()
+
+    quantiacsToolbox.log_url = args.log_url
     
     results = quantiacsToolbox.runts(__file__)

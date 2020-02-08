@@ -48,7 +48,7 @@ if PY3:
 else:
     string_types = basestring,
 
-debug = False
+log_url = True
     
 REQUIRED_DATA = frozenset(['DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE', 'P', 'RINFO', 'p'])
 
@@ -99,7 +99,10 @@ def loadData(marketList=None, dataToLoad=None, refresh=False, beginInSample=None
 
         # check to see if market data is present. If not (or refresh is true), download data from quantiacs.
         if refresh or not os.path.isfile(path):
-            resp = requests.get("https://www.quantiacs.com/data/" + market + ".txt", timeout=30)
+            url = "https://www.quantiacs.com/data/" + market + ".txt"
+            if log_url:
+                print("Url: {}".format(url))
+            resp = requests.get(url, timeout=30)
             if resp.status_code == requests.codes.ok:
                 with open(path, 'wb') as dataFile:
                     dataFile.write(resp.content)
@@ -144,7 +147,10 @@ def loadData(marketList=None, dataToLoad=None, refresh=False, beginInSample=None
         filePath = os.path.join(dataDir, additionData + '.txt')
         # check to see if data is present. If not (or refresh is true), download data from quantiacs.
         if refresh or not os.path.isfile(filePath):
-            resp = requests.get("https://www.quantiacs.com/data/" + additionData + ".txt", timeout=30)
+            url = "https://www.quantiacs.com/data/" + additionData + ".txt"
+            if log_url:
+                print("Url: {}".format(url))
+            resp = requests.get(url, timeout=30)
             if resp.status_code == requests.codes.ok:
                 with open(filePath, 'wb') as dataFile:
                     dataFile.write(resp.content)
